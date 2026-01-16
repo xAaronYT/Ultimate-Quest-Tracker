@@ -21,9 +21,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Absolute-relative path ensures Vercel serves correctly from public root
         const response = await fetch('/quests_updated.json');
-        
         if (!response.ok) {
            throw new Error(`INTELLIGENCE_LINK_FAILED: ${response.status}. Deployment check: Ensure file is in public folder.`);
         }
@@ -34,7 +32,6 @@ const App: React.FC = () => {
         console.error("DATA_SYNC_ERROR:", err.message);
         setError(err.message);
       } finally {
-        // Stabilize UI transition
         setTimeout(() => setIsLoading(false), 1000);
       }
     };
@@ -206,12 +203,23 @@ const App: React.FC = () => {
                 : 'border-transparent text-gray-500 hover:text-orange-400 hover:bg-white/5'
               }`}
             >
-              <img 
-                src={`assets/${normalizeAssetName(trader)}.png`} 
-                alt=""
-                className={`w-9 h-9 rounded-lg object-cover border border-white/5 shrink-0 transition-all ${activeTrader === trader ? 'grayscale-0' : 'grayscale opacity-40'}`}
-                onError={(e) => (e.currentTarget.style.display = 'none')}
-              />
+              <div className="w-9 h-9 rounded-lg border border-white/5 shrink-0 overflow-hidden bg-black/40 flex items-center justify-center">
+                <img 
+                  src={`assets/${normalizeAssetName(trader)}.png`} 
+                  alt=""
+                  className={`w-full h-full object-cover transition-all ${activeTrader === trader ? 'grayscale-0' : 'grayscale opacity-40'}`}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const parent = e.currentTarget.parentElement;
+                    if (parent && !parent.querySelector('.trader-fallback')) {
+                      const span = document.createElement('span');
+                      span.className = 'trader-fallback text-[10px] font-black text-orange-500';
+                      span.innerText = trader[0];
+                      parent.appendChild(span);
+                    }
+                  }}
+                />
+              </div>
               <span className="text-[10px] font-black uppercase tracking-widest">{trader}</span>
             </button>
           ))}
