@@ -15,20 +15,16 @@ const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTrader, setActiveTrader] = useState<string>('All');
   const [filterMode, setFilterMode] = useState<FilterMode>('Active');
+  const [showWipeSafeguard, setShowWipeSafeguard] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Since quests_updated.json is in /public, it is served at root "/"
         const response = await fetch('/quests_updated.json');
-        
-        if (!response.ok) {
-           throw new Error(`Data Load Error: ${response.status}. Check if file is in /public folder.`);
-        }
+        if (!response.ok) throw new Error(`Data Sync Error: ${response.status}`);
         const data = await response.json();
         setAllQuests(data);
       } catch (err: any) {
-        console.error("Fetch failed:", err.message);
         setError(err.message);
       } finally {
         setTimeout(() => setIsLoading(false), 800);
@@ -65,6 +61,14 @@ const App: React.FC = () => {
     });
   };
 
+  const handleGlobalWipe = () => {
+    localStorage.clear();
+    setCompletedQuestIds(new Set());
+    setFoundCollectorItems(new Set());
+    setShowWipeSafeguard(false);
+    window.location.reload();
+  };
+
   const questNameToIdMap = useMemo(() => {
     const map: Record<string, string> = {};
     allQuests.forEach(q => { map[q.name] = q.id; });
@@ -86,13 +90,10 @@ const App: React.FC = () => {
       const matchesTrader = activeTrader === 'All' || q.trader.name === activeTrader;
       
       let matchesFilterMode = true;
-      if (filterMode === 'Active') {
-        matchesFilterMode = !isDone;
-      } else if (filterMode === 'Kappa') {
-        matchesFilterMode = q.kappaRequired && !isDone;
-      } else if (filterMode === 'Lightkeeper') {
-        matchesFilterMode = q.lightkeeperRequired && !isDone;
-      }
+      if (filterMode === 'Active') matchesFilterMode = !isDone;
+      else if (filterMode === 'Kappa') matchesFilterMode = q.kappaRequired && !isDone;
+      else if (filterMode === 'Lightkeeper') matchesFilterMode = q.lightkeeperRequired && !isDone;
+      else if (filterMode === 'Show All') matchesFilterMode = true;
 
       return matchesSearch && matchesTrader && matchesFilterMode;
     });
@@ -110,20 +111,25 @@ const App: React.FC = () => {
     };
   }, [allQuests, completedQuestIds]);
 
-  if (isLoading) return <div className="h-screen bg-[#080808] flex items-center justify-center text-orange-500 font-black tracking-widest animate-pulse uppercase">Syncing Intel...</div>;
-
-  if (error) return (
-    <div className="h-screen bg-[#080808] flex items-center justify-center p-10">
-      <div className="text-center border border-red-900/40 p-10 bg-red-950/10 rounded-2xl">
-        <h2 className="text-white font-black uppercase tracking-widest mb-4">Connection Lost</h2>
-        <p className="text-xs text-gray-500 font-mono mb-6">{error}</p>
-        <button onClick={() => window.location.reload()} className="px-6 py-3 bg-red-600 text-white text-[10px] font-black uppercase rounded-lg">Retry Sync</button>
-      </div>
-    </div>
-  );
+  if (isLoading) return <div className="h-screen bg-[#080808] flex items-center justify-center text-orange-500 font-black tracking-[1em] animate-pulse uppercase">Syncing Intel...</div>;
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#0c0c0c] text-gray-200 font-inter">
+      
+      {/* WIPE CONFIRMATION MODAL */}
+      {showWipeSafeguard && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4">
+          <div className="max-w-sm w-full p-8 bg-[#121212] border border-red-900/30 rounded-2xl text-center space-y-6 shadow-2xl">
+            <h4 className="text-xl font-black uppercase text-white italic">Confirm System Wipe</h4>
+            <p className="text-xs text-gray-500 tracking-wider leading-relaxed">You are about to erase all local quest progress and stash data. This operation is permanent.</p>
+            <div className="flex gap-3 pt-2">
+              <button onClick={() => setShowWipeSafeguard(false)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors">Cancel</button>
+              <button onClick={handleGlobalWipe} className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg transition-colors">Confirm Wipe</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* SIDEBAR */}
       <nav className="w-64 flex-shrink-0 border-r border-white/5 bg-[#0a0a0a] flex flex-col z-30">
         <div className="p-6 border-b border-white/5">
@@ -132,7 +138,7 @@ const App: React.FC = () => {
         </div>
         
         <div className="flex-1 overflow-y-auto py-4 custom-scrollbar">
-          <button onClick={() => setActiveTrader('All')} className={`w-full flex px-6 py-4 border-l-4 ${activeTrader === 'All' ? 'bg-orange-500/5 border-orange-500 text-orange-500' : 'border-transparent text-gray-600'}`}>
+          <button onClick={() => setActiveTrader('All')} className={`w-full flex px-6 py-4 border-l-4 transition-all ${activeTrader === 'All' ? 'bg-orange-500/5 border-orange-500 text-orange-500' : 'border-transparent text-gray-600 hover:text-gray-300'}`}>
             <span className="text-[10px] font-black uppercase tracking-widest">Global Operations</span>
           </button>
           
@@ -163,15 +169,36 @@ const App: React.FC = () => {
       </nav>
 
       <main className="flex-1 flex flex-col min-w-0 relative">
-        <header className="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-[#0f0f0f]/90 backdrop-blur-xl z-20 sticky top-0">
+        <header className="px-8 py-6 border-b border-white/5 flex flex-col lg:flex-row justify-between items-center gap-6 bg-[#0f0f0f]/90 backdrop-blur-xl z-20 sticky top-0">
           <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase">{activeTrader}</h2>
-          <div className="flex gap-4 items-center">
-            <input type="text" placeholder="Search data..." className="bg-[#141414] border border-white/10 rounded-lg px-4 py-2 text-xs focus:border-orange-500/40 w-56 font-bold" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+          
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <input 
+              type="text" 
+              placeholder="Search..." 
+              className="bg-[#141414] border border-white/10 rounded-lg px-4 py-2 text-xs focus:border-orange-500/40 w-56 font-bold transition-all" 
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)} 
+            />
+            
             <div className="flex bg-black p-1 rounded-lg border border-white/5">
               {(['Active', 'Kappa', 'Lightkeeper', 'Show All'] as FilterMode[]).map((mode) => (
-                <button key={mode} onClick={() => setFilterMode(mode)} className={`px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest transition-all ${filterMode === mode ? 'bg-orange-500 text-black' : 'text-gray-600 hover:text-orange-400'}`}>{mode}</button>
+                <button key={mode} onClick={() => setFilterMode(mode)} className={`px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest transition-all ${filterMode === mode ? 'bg-orange-500 text-black' : 'text-gray-600 hover:text-orange-400'}`}>
+                  {mode}
+                </button>
               ))}
             </div>
+
+            {/* RESET BUTTON */}
+            <button 
+              onClick={() => setShowWipeSafeguard(true)}
+              className="p-2.5 rounded-lg border border-white/5 hover:border-red-900/50 text-gray-600 hover:text-red-500 transition-all"
+              title="PURGE SYSTEM"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
           </div>
         </header>
 
@@ -200,7 +227,7 @@ const App: React.FC = () => {
       </main>
 
       <aside className="hidden 2xl:flex w-80 flex-shrink-0 border-l border-white/5 bg-[#0a0a0a] flex flex-col z-30">
-        <div className="p-6 border-b border-white/5 flex justify-between items-center">
+        <div className="p-6 border-b border-white/5">
           <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] italic">The Stash</h3>
         </div>
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
@@ -209,7 +236,8 @@ const App: React.FC = () => {
               <button
                 key={item}
                 onClick={() => toggleCollectorItem(item)}
-                className={`aspect-square rounded border flex items-center justify-center overflow-hidden transition-all ${foundCollectorItems.has(item) ? 'bg-orange-500/10 border-orange-500/40' : 'bg-[#0f0f0f] border-white/5 opacity-30'}`}
+                className={`aspect-square rounded border flex items-center justify-center overflow-hidden transition-all ${foundCollectorItems.has(item) ? 'bg-orange-500/10 border-orange-500/40 opacity-100' : 'bg-[#0f0f0f] border-white/5 opacity-30 hover:opacity-60'}`}
+                title={item}
               >
                 <img 
                   src={`/assets/items/${normalizeAssetName(item)}.png`} 
