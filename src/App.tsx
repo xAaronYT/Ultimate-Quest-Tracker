@@ -98,18 +98,20 @@ const App: React.FC = () => {
       return matchesSearch && matchesTrader && matchesFilterMode;
     });
 
-    // PRIORITY SORT: Active AND Available quests moved to top
+    // AGGRESSIVE SORTING LOGIC
     return [...filtered].sort((a, b) => {
       const aDone = completedQuestIds.has(a.id);
       const bDone = completedQuestIds.has(b.id);
-      const aAvail = checkAvailability(a);
-      const bAvail = checkAvailability(b);
+      const aAvailable = checkAvailability(a);
+      const bAvailable = checkAvailability(b);
 
-      // Score: 0 = High Priority (Available & Active), 1 = Low Priority (Done or Locked)
-      const aScore = (!aDone && aAvail) ? 0 : 1;
-      const bScore = (!bDone && bAvail) ? 0 : 1;
+      const getWeight = (done: boolean, available: boolean) => {
+        if (!done && available) return 0; // Top: Active & Available
+        if (!done && !available) return 1; // Middle: Active but Locked
+        return 2; // Bottom: Completed
+      };
 
-      return aScore - bScore;
+      return getWeight(aDone, aAvailable) - getWeight(bDone, bAvailable);
     });
   }, [allQuests, searchQuery, activeTrader, filterMode, completedQuestIds, questNameToIdMap]);
 
@@ -136,7 +138,7 @@ const App: React.FC = () => {
             <h4 className="text-xl font-black uppercase text-white italic">Confirm System Wipe</h4>
             <div className="flex gap-3 pt-2">
               <button onClick={() => setShowWipeSafeguard(false)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest rounded-lg">Cancel</button>
-              <button onClick={handleGlobalWipe} className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg">Confirm Wipe</button>
+              <button onClick={handleGlobalWipe} className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg">Confirm Wipe</button>
             </div>
           </div>
         </div>
@@ -162,7 +164,6 @@ const App: React.FC = () => {
           ))}
         </div>
 
-        {/* REVAMPED DONATION BOX */}
         <div className="p-4 bg-black/60 border-t border-white/5">
           <a 
             href="https://cash.app/$xajcinc" 
@@ -203,7 +204,6 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* BOTTOM BAR: SOLID OPACITY */}
         <div className="absolute bottom-0 left-0 right-0 bg-[#0c0c0c] border-t border-white/10 p-6 px-8 z-40 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
           <div className="max-w-7xl mx-auto grid grid-cols-3 gap-12">
             <ProgressBar label="Overall" value={`${stats.overall.count}/${stats.overall.total}`} pct={stats.overall.pct} color="bg-orange-600" />
