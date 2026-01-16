@@ -36,29 +36,27 @@
             margin: 0;
             overflow: hidden;
         }
-        /* Custom scrollbar for tactical feel */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #080808; }
         ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #f97316; }
-        
-        .custom-scrollbar {
-            scrollbar-width: thin;
-            scrollbar-color: #222 transparent;
-        }
+        .custom-scrollbar { scrollbar-width: thin; scrollbar-color: #222 transparent; }
     </style>
     <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@18.2.0",
-        "react-dom": "https://esm.sh/react-dom@18.2.0",
-        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client"
-      }
-    }
-    </script>
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="index.js"></script>
+    <!-- Point exactly to the file in the project root -->
+    <script type="module" src="index.tsx"></script>
 </body>
 </html>
