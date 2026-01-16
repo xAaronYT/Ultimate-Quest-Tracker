@@ -52,4 +52,5 @@ export interface AppState {
   searchQuery: string;
   filterTrader: string | 'All';
   filterType: 'All' | 'Kappa' | 'Lightkeeper';
+  foundCollectorItems: Set<string>;
 }
