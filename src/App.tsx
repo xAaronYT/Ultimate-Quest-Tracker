@@ -120,7 +120,7 @@ const App: React.FC = () => {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4">
           <div className="max-w-sm w-full p-8 bg-[#121212] border border-red-900/30 rounded-2xl text-center space-y-6 shadow-2xl">
             <h4 className="text-xl font-black uppercase text-white italic">Confirm System Wipe</h4>
-            <p className="text-xs text-gray-500 tracking-wider leading-relaxed">Permanent erasure of quest progress and stash data.</p>
+            <p className="text-xs text-gray-500 tracking-wider leading-relaxed">This will erase all progress and items.</p>
             <div className="flex gap-3 pt-2">
               <button onClick={() => setShowWipeSafeguard(false)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors">Cancel</button>
               <button onClick={handleGlobalWipe} className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg transition-colors">Confirm Wipe</button>
@@ -176,7 +176,7 @@ const App: React.FC = () => {
               placeholder="Search..." 
               className="bg-[#141414] border border-white/10 rounded-lg px-4 py-2 text-xs focus:border-orange-500/40 w-56 font-bold" 
               value={searchQuery} 
-              onChange={(e) => setSearchQuery(e.value)} 
+              onChange={(e) => setSearchQuery(e.target.value)} 
             />
             
             <div className="flex bg-black p-1 rounded-lg border border-white/5">
@@ -232,7 +232,7 @@ const App: React.FC = () => {
               <button
                 key={item}
                 onClick={() => toggleCollectorItem(item)}
-                title={item} // THIS ADDS THE TOOLTIP ON HOVER
+                title={item}
                 className={`group relative aspect-square rounded border flex items-center justify-center overflow-hidden transition-all ${foundCollectorItems.has(item) ? 'bg-orange-500/10 border-orange-500/40 opacity-100' : 'bg-[#0f0f0f] border-white/5 opacity-30 hover:opacity-60'}`}
               >
                 <img 
@@ -240,12 +240,10 @@ const App: React.FC = () => {
                   alt={item} 
                   className="w-[80%] h-[80%] object-contain z-10"
                   onError={(e) => { 
-                    // If image fails, show initials/label instead of nothing
                     e.currentTarget.style.display = 'none';
                     e.currentTarget.parentElement?.classList.add('flex-col');
                   }}
                 />
-                {/* Fallback Label if Image is Missing */}
                 <span className="absolute inset-0 flex items-center justify-center text-[7px] font-bold text-center p-1 text-gray-600 uppercase leading-none break-words pointer-events-none group-hover:text-orange-500">
                    {item}
                 </span>
