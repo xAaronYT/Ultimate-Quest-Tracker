@@ -4,25 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ultimate Quest Tracker | EFT</title>
-
     <link rel="icon" type="image/png" href="https://tarkov.dev/favicon.ico">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { inter: ['Inter', 'sans-serif'] },
-                    colors: {
-                        tarkov: {
-                            dark: '#0c0c0c',
-                            panel: '#0a0a0a',
-                            accent: '#f97316',
-                        }
-                    }
-                }
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { inter: ['Inter', 'sans-serif'] },
+            colors: {
+              tarkov: {
+                dark: '#0c0c0c',
+                panel: '#0a0a0a',
+                accent: '#f97316',
+              }
             }
+          }
         }
+      }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -33,32 +31,15 @@
             margin: 0;
             overflow: hidden;
         }
-
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #080808;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #222;
-            border-radius: 10px;
-        }
-
-            ::-webkit-scrollbar-thumb:hover {
-                background: #f97316;
-            }
-
-        .custom-scrollbar {
-            scrollbar-width: thin;
-            scrollbar-color: #222 transparent;
-        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #080808; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f97316; }
+        .custom-scrollbar { scrollbar-width: thin; scrollbar-color: #222 transparent; }
     </style>
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="index.tsx"></script>
+    <script type="module" src="/src/index.tsx"></script>
 </body>
 </html>
