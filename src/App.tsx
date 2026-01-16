@@ -28,7 +28,7 @@ const App: React.FC = () => {
                 const data = await response.json();
                 setAllQuests(data);
             } catch (err) {
-                console.error("Failed to load quest data", err);
+                console.error("Critical error loading quest_updated.json", err);
             } finally {
                 setIsLoading(false);
             }
@@ -67,9 +67,9 @@ const App: React.FC = () => {
     const handleReset = () => {
         setCompletedQuestIds(new Set());
         setFoundCollectorItems(new Set());
-        localStorage.removeItem('uqt_progress');
-        localStorage.removeItem('uqt_stash');
+        localStorage.clear();
         setShowResetConfirm(false);
+        window.location.reload();
     };
 
     const questNameToIdMap = useMemo(() => {
@@ -126,7 +126,7 @@ const App: React.FC = () => {
     if (isLoading) return <div className="h-screen bg-[#080808] flex items-center justify-center text-orange-500 font-black tracking-[1em] animate-pulse uppercase">Syncing Intel...</div>;
 
     return (
-        <div className="flex h-screen overflow-hidden bg-[#0c0c0c] text-gray-200 font-inter text-[13px]">
+        <div className="flex h-screen overflow-hidden bg-[#0c0c0c] text-gray-200 font-inter selection:bg-orange-500/30">
             <Analytics />
             <BugReportModal isOpen={isBugModalOpen} onClose={() => setIsBugModalOpen(false)} />
 
@@ -145,13 +145,6 @@ const App: React.FC = () => {
                     <button onClick={() => setMobileView('Stash')} className={`p-2 rounded-lg transition-all ${mobileView === 'Stash' ? 'text-orange-500 bg-orange-500/10 shadow-[0_0_15px_rgba(249,115,22,0.2)]' : 'text-gray-600'}`}>
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
                     </button>
-                    {/* Mobile Reset Action */}
-                    <button
-                        onClick={() => showResetConfirm ? handleReset() : setShowResetConfirm(true)}
-                        className={`mt-4 p-2 rounded-lg transition-all ${showResetConfirm ? 'text-red-500 animate-pulse bg-red-500/10' : 'text-red-900/40'}`}
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                    </button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto py-4 custom-scrollbar">
@@ -167,6 +160,22 @@ const App: React.FC = () => {
                             <span className="text-[10px] font-black uppercase hidden lg:block tracking-widest">{t}</span>
                         </button>
                     ))}
+
+                    <div className="lg:hidden flex flex-col items-center py-8 mt-4 border-t border-white/5 gap-6">
+                        <button
+                            onClick={() => showResetConfirm ? handleReset() : setShowResetConfirm(true)}
+                            className={`text-[10px] font-black uppercase tracking-tighter ${showResetConfirm ? 'text-red-500 animate-pulse' : 'text-red-900/40'}`}
+                        >
+                            {showResetConfirm ? 'CONFIRM' : 'WIPE'}
+                        </button>
+
+                        <button
+                            onClick={() => setIsBugModalOpen(true)}
+                            className="text-[10px] font-black uppercase tracking-tighter text-gray-600 hover:text-orange-500 transition-colors"
+                        >
+                            REPORT BUG
+                        </button>
+                    </div>
                 </div>
 
                 <div className="p-4 bg-black/60 border-t border-white/5 space-y-2 hidden lg:block">
@@ -196,7 +205,7 @@ const App: React.FC = () => {
                         />
                         <div className="hidden md:flex bg-black p-1 rounded-lg border border-white/5">
                             {(['Active', 'Kappa', 'Lightkeeper', 'Show All'] as FilterMode[]).map((m) => (
-                                <button key={m} onClick={() => setFilterMode(m)} className={`px-3 py-1.5 rounded text-[8px] font-black uppercase transition-all ${filterMode === m ? 'bg-orange-500 text-black' : 'text-gray-600 hover:text-gray-300'}`}>{m}</button>
+                                <button key={m} onClick={() => setFilterMode(m)} className={`px-3 py-1.5 rounded text-[8px] font-black uppercase transition-all ${filterMode === m ? 'bg-orange-500 text-black shadow-[0_0_10px_rgba(249,115,22,0.3)]' : 'text-gray-600 hover:text-gray-300'}`}>{m}</button>
                             ))}
                         </div>
                     </div>
@@ -218,11 +227,29 @@ const App: React.FC = () => {
                     )}
                 </div>
 
+                {/* Footer Statistics with Fractional Progress */}
                 <div className="absolute bottom-0 left-0 right-0 bg-[#0c0c0c]/95 backdrop-blur-md border-t border-white/10 p-4 lg:p-6 z-40">
                     <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-12">
-                        <ProgressBar label="Overall" value={`${stats.overall.pct}%`} pct={stats.overall.pct} color="bg-orange-600" />
-                        <ProgressBar label="Kappa" value={`${stats.kappa.pct}%`} pct={stats.kappa.pct} color="bg-[#fff000]" labelColor="text-[#fff000]" />
-                        <ProgressBar label="Lightkeeper" value={`${stats.lightkeeper.pct}%`} pct={stats.lightkeeper.pct} color="bg-blue-600" labelColor="text-blue-500" />
+                        <ProgressBar
+                            label="Overall"
+                            value={`${stats.overall.pct}%`}
+                            pct={stats.overall.pct}
+                            color="bg-orange-600"
+                        />
+                        <ProgressBar
+                            label="Kappa"
+                            value={`${stats.kappa.count}/${stats.kappa.total}`}
+                            pct={stats.kappa.pct}
+                            color="bg-[#fff000]"
+                            labelColor="text-[#fff000]"
+                        />
+                        <ProgressBar
+                            label="Lightkeeper"
+                            value={`${stats.lightkeeper.count}/${stats.lightkeeper.total}`}
+                            pct={stats.lightkeeper.pct}
+                            color="bg-blue-600"
+                            labelColor="text-blue-500"
+                        />
                     </div>
                 </div>
             </main>
