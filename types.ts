@@ -20,6 +20,7 @@ export interface QuestObjective {
   count?: number;
   foundInRaid?: boolean;
   maps?: { name: string }[];
+  item?: { name: string };
 }
 
 export interface TaskRequirement {
@@ -42,6 +43,7 @@ export interface Quest {
   experience?: number;
   taskRequirements: TaskRequirement[];
   objectives: QuestObjective[];
+  neededKeys?: any; // Changed to any/null to match JSON diversity
   finishRewards?: {
     items?: { count: number; item: { name: string } }[];
   };
