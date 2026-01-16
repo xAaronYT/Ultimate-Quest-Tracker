@@ -7,6 +7,39 @@ import { normalizeAssetName } from './utils';
 
 type FilterMode = 'Active' | 'Kappa' | 'Lightkeeper' | 'All';
 
+// ARCHITECT'S FAIL-SAFE: Starter data to ensure the app works even if the JSON file is missing
+const INITIAL_FALLBACK_DATA: Quest[] = [
+  {
+    id: "978645312",
+    name: "Debut",
+    trader: { name: "Prapor" },
+    minPlayerLevel: 1,
+    kappaRequired: true,
+    lightkeeperRequired: false,
+    wikiLink: "https://escapefromtarkov.fandom.com/wiki/Debut",
+    experience: 600,
+    taskRequirements: [],
+    objectives: [
+      { id: "obj1", type: "kill", description: "Eliminate 5 Scavs over all Tarkov territory", count: 5 },
+      { id: "obj2", type: "give", description: "Hand over 2 MP-133 12ga shotguns", count: 2, foundInRaid: true }
+    ]
+  },
+  {
+    id: "135246789",
+    name: "Shortage",
+    trader: { name: "Therapist" },
+    minPlayerLevel: 1,
+    kappaRequired: true,
+    lightkeeperRequired: false,
+    wikiLink: "https://escapefromtarkov.fandom.com/wiki/Shortage",
+    experience: 2100,
+    taskRequirements: [],
+    objectives: [
+      { id: "obj3", type: "give", description: "Find and hand over 3 Salewa first aid kits", count: 3, foundInRaid: true }
+    ]
+  }
+];
+
 const App: React.FC = () => {
   const [allQuests, setAllQuests] = useState<Quest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,16 +54,23 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('./quests_updated.json');
-        if (!response.ok) throw new Error("Local intel source offline (404)");
-        const data = await response.json();
-        setAllQuests(data);
+        // Attempt to fetch the master intelligence file from the root directory
+        const response = await fetch('quests_updated.json');
+        
+        if (!response.ok) {
+          console.warn("INTEL_OFFLINE: quests_updated.json not found. Deploying emergency fallback data.");
+          setAllQuests(INITIAL_FALLBACK_DATA);
+        } else {
+          const data = await response.json();
+          setAllQuests(data);
+        }
         setError(null);
       } catch (err: any) {
         console.error("DATA_SYNC_ERROR:", err.message);
-        setError("CRITICAL_SYSTEM_FAILURE: Local database 'quests_updated.json' could not be initialized.");
+        setError(`INTEL_ACCESS_DENIED: ${err.message}`);
+        setAllQuests(INITIAL_FALLBACK_DATA);
       } finally {
-        setTimeout(() => setIsLoading(false), 1000);
+        setTimeout(() => setIsLoading(false), 800);
       }
     };
     fetchData();
@@ -142,7 +182,7 @@ const App: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (error && allQuests.length === 0) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-[#080808] p-10 font-inter">
         <div className="max-w-md w-full border border-red-900/40 bg-red-950/10 p-10 rounded-2xl text-center space-y-6 shadow-2xl">
