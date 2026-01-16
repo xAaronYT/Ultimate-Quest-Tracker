@@ -98,7 +98,6 @@ const App: React.FC = () => {
       return matchesSearch && matchesTrader && matchesFilterMode;
     });
 
-    // AGGRESSIVE SORTING LOGIC
     return [...filtered].sort((a, b) => {
       const aDone = completedQuestIds.has(a.id);
       const bDone = completedQuestIds.has(b.id);
@@ -106,9 +105,9 @@ const App: React.FC = () => {
       const bAvailable = checkAvailability(b);
 
       const getWeight = (done: boolean, available: boolean) => {
-        if (!done && available) return 0; // Top: Active & Available
-        if (!done && !available) return 1; // Middle: Active but Locked
-        return 2; // Bottom: Completed
+        if (!done && available) return 0;
+        if (!done && !available) return 1;
+        return 2;
       };
 
       return getWeight(aDone, aAvailable) - getWeight(bDone, bAvailable);
@@ -165,17 +164,10 @@ const App: React.FC = () => {
         </div>
 
         <div className="p-4 bg-black/60 border-t border-white/5">
-          <a 
-            href="https://cash.app/$xajcinc" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-transparent border border-orange-500/20 hover:border-orange-500/50 transition-all group"
-          >
+          <a href="https://cash.app/$xajcinc" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-transparent border border-orange-500/20 hover:border-orange-500/50 transition-all group">
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 mb-1">Support the App</span>
-            <span className="text-[8px] font-bold text-gray-500 text-center leading-tight">Your donations keep the servers running and the intel fresh.</span>
-            <div className="mt-3 px-4 py-1.5 bg-orange-500 text-black text-[9px] font-black uppercase tracking-widest rounded group-hover:bg-orange-400 transition-colors">
-              Donate Now
-            </div>
+            <span className="text-[8px] font-bold text-gray-500 text-center leading-tight">Donations keep the intel fresh.</span>
+            <div className="mt-3 px-4 py-1.5 bg-orange-500 text-black text-[9px] font-black uppercase tracking-widest rounded group-hover:bg-orange-400">Donate Now</div>
           </a>
         </div>
       </nav>
@@ -190,7 +182,7 @@ const App: React.FC = () => {
                 <button key={mode} onClick={() => setFilterMode(mode)} className={`px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest transition-all ${filterMode === mode ? 'bg-orange-500 text-black' : 'text-gray-600 hover:text-orange-400'}`}>{mode}</button>
               ))}
             </div>
-            <button onClick={() => setShowWipeSafeguard(true)} className="p-2.5 rounded-lg border border-white/5 text-gray-600 hover:text-red-500 transition-colors">
+            <button onClick={() => setShowWipeSafeguard(true)} className="p-2.5 rounded-lg border border-white/5 text-gray-600 hover:text-red-500">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
             </button>
           </div>
@@ -220,12 +212,7 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           <div className="grid grid-cols-4 gap-2">
             {COLLECTOR_ITEMS.map((item) => (
-              <StashItem 
-                key={item} 
-                item={item} 
-                isFound={foundCollectorItems.has(item)} 
-                onToggle={toggleCollectorItem} 
-              />
+              <StashItem key={item} item={item} isFound={foundCollectorItems.has(item)} onToggle={toggleCollectorItem} />
             ))}
           </div>
         </div>
@@ -240,21 +227,23 @@ const StashItem: React.FC<{ item: string, isFound: boolean, onToggle: (item: str
   return (
     <button
       onClick={() => onToggle(item)}
-      title={imgError ? item : undefined}
-      className={`relative aspect-square rounded border flex items-center justify-center overflow-hidden transition-all ${isFound ? 'bg-orange-500/10 border-orange-500/40 opacity-100' : 'bg-[#0f0f0f] border-white/5 opacity-30 hover:opacity-50'}`}
+      className={`relative aspect-square rounded-md border transition-all duration-200 flex items-center justify-center overflow-hidden
+        ${isFound 
+          ? 'bg-orange-500/20 border-orange-400 shadow-[0_0_10px_rgba(251,146,60,0.2)] opacity-100 scale-105 z-10' 
+          : 'bg-zinc-900/50 border-white/10 opacity-60 hover:opacity-100'
+        }`}
     >
       {!imgError ? (
         <img 
           src={`/assets/items/${normalizeAssetName(item)}.png`} 
           alt={item} 
-          className="w-[80%] h-[80%] object-contain z-10"
+          className={`w-[85%] h-[85%] object-contain z-10 drop-shadow-md ${!isFound ? 'brightness-75 contrast-125' : 'brightness-110'}`}
           onError={() => setImgError(true)}
         />
       ) : (
-        <span className="text-[7px] font-bold text-center p-1 text-gray-600 uppercase leading-none break-words">
-           {item}
-        </span>
+        <span className="text-[7px] font-black text-center p-1 text-gray-500 uppercase break-words">{item}</span>
       )}
+      {!isFound && <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />}
     </button>
   );
 };
@@ -262,7 +251,7 @@ const StashItem: React.FC<{ item: string, isFound: boolean, onToggle: (item: str
 const ProgressBar: React.FC<{ label: string, value: string, pct: number, color: string, labelColor?: string }> = ({ label, value, pct, color, labelColor = "text-gray-600" }) => (
   <div className="flex-1 space-y-3">
     <div className="flex justify-between text-[10px] font-black uppercase tracking-widest"><span className={labelColor}>{label}</span><span className="text-white font-mono">{value}</span></div>
-    <div className="w-full bg-white/[0.05] h-1.5 rounded-full overflow-hidden"><div className={`${color} h-full transition-all duration-1000 shadow-[0_0_10px_rgba(255,255,255,0.1)]`} style={{ width: `${pct}%` }} /></div>
+    <div className="w-full bg-white/[0.05] h-1.5 rounded-full overflow-hidden"><div className={`${color} h-full transition-all duration-1000`} style={{ width: `${pct}%` }} /></div>
   </div>
 );
 
