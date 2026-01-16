@@ -5,23 +5,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ultimate Quest Tracker | Tarkov Intelligence Hub</title>
+    <!-- Resolve 404 for favicon with a tactical icon -->
+    <link rel="icon" type="image/png" href="https://vignette.wikia.nocookie.net/escapefromtarkov_gamepedia/images/b/b3/QuestIcon.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              inter: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              tarkov: {
+                dark: '#0c0c0c',
+                panel: '#0a0a0a',
+                accent: '#f97316',
+              }
+            }
+          }
+        }
+      }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0c0c0c;
             color: #e5e7eb;
+            overflow: hidden;
         }
         .tarkov-gradient {
             background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-        }
-        .trader-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .trader-card:hover {
-            transform: translateY(-4px);
-            border-color: #d1b16e;
         }
         ::-webkit-scrollbar {
             width: 8px;
@@ -34,10 +48,7 @@
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #d1b16e;
-        }
-        @keyframes shimmer {
-            100% { transform: translateX(100%); }
+            background: #f97316;
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 4px;
