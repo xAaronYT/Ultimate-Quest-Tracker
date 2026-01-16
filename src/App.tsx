@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { Quest } from './types';
 import { TRADERS, COLLECTOR_ITEMS } from './constants';
 import { QuestCard } from './components/QuestCard';
@@ -129,6 +130,7 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#0c0c0c] text-gray-200 font-inter">
+      <Analytics />
       <BugReportModal isOpen={isBugModalOpen} onClose={() => setIsBugModalOpen(false)} />
       
       {showWipeSafeguard && (
