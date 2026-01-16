@@ -1,12 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Quest Tracker | Tarkov Intelligence Hub</title>
-    <!-- Reliable fallback icon for tactical UI -->
+    <title>EFT-Architect | Tactical Quest Tracker</title>
+    <!-- Reliable favicon to prevent 404 -->
     <link rel="icon" type="image/png" href="https://tarkov.dev/favicon.ico">
+    
+    <!-- Tailwind JIT via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -32,46 +33,32 @@
             font-family: 'Inter', sans-serif;
             background-color: #0c0c0c;
             color: #e5e7eb;
+            margin: 0;
             overflow: hidden;
         }
-        .tarkov-gradient {
-            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1a1a1a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #f97316;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #222;
-            border-radius: 10px;
+        /* Custom scrollbar for tactical feel */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #080808; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f97316; }
+        
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #222 transparent;
         }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
-  }
-}
-</script>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom": "https://esm.sh/react-dom@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client"
+      }
+    }
+    </script>
 </head>
 <body>
     <div id="root"></div>
+    <script type="module" src="index.js"></script>
 </body>
 </html>
