@@ -21,6 +21,8 @@ export interface QuestObjective {
   foundInRaid?: boolean;
   maps?: { name: string }[];
   item?: { name: string };
+  targetNames?: string[];
+  bodyParts?: string[];
 }
 
 export interface TaskRequirement {
@@ -43,9 +45,10 @@ export interface Quest {
   experience?: number;
   taskRequirements: TaskRequirement[];
   objectives: QuestObjective[];
-  neededKeys?: any; // Changed to any/null to match JSON diversity
+  neededKeys?: any;
   finishRewards?: {
     items?: { count: number; item: { name: string } }[];
+    traderStanding?: { standing: number; trader: { name: string } }[];
   };
 }
 
