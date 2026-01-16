@@ -1,0 +1,5 @@
+{
+  "name": "Ultimate Quest Tracker",
+  "description": "A high-fidelity quest and item tracker for Escape from Tarkov, featuring prerequisite mapping, trader progression, and status tracking for Kappa and Lightkeeper requirements.",
+  "requestFramePermissions": []
+}
