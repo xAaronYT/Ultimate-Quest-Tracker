@@ -15,14 +15,14 @@ export const QuestCard: React.FC<QuestCardProps> = ({ quest, isCompleted, isAvai
   return (
     <div className={`relative flex flex-col transition-all duration-200 rounded-xl border overflow-hidden
       ${isCompleted 
-        ? 'bg-black/20 border-white/5 opacity-40' 
+        ? 'bg-black/40 border-green-900/30' 
         : !isAvailable 
           ? 'bg-[#0a0a0a] border-white/5 opacity-60 grayscale' 
-          : 'bg-[#111111] border-white/10 shadow-lg'
+          : 'bg-[#111111] border-white/10 shadow-lg hover:border-white/20'
       }
     `}>
       <div className="flex h-24">
-        {/* LEFT 75%: MAIN CLICK AREA (TOGGLE COMPLETE) */}
+        {/* LEFT 75%: MAIN CLICK AREA */}
         <div 
           onClick={() => onToggle(quest.id)}
           className="w-[75%] p-4 flex gap-4 cursor-pointer hover:bg-white/[0.02] transition-colors border-r border-white/5"
@@ -45,7 +45,7 @@ export const QuestCard: React.FC<QuestCardProps> = ({ quest, isCompleted, isAvai
                 {quest.lightkeeperRequired && <span className="text-[8px] font-black bg-blue-600 text-white px-1 rounded-sm">L</span>}
               </div>
             </div>
-            <h3 className={`text-[11px] font-black uppercase tracking-tight leading-tight line-clamp-2 ${isCompleted ? 'text-gray-500 line-through' : 'text-white'}`}>
+            <h3 className={`text-[11px] font-black uppercase tracking-tight leading-tight line-clamp-2 ${isCompleted ? 'text-gray-500' : 'text-white'}`}>
               {quest.name}
             </h3>
           </div>
@@ -67,7 +67,7 @@ export const QuestCard: React.FC<QuestCardProps> = ({ quest, isCompleted, isAvai
         </div>
       </div>
 
-      {/* EXPANDED CONTENT: OBJECTIVES / REQS */}
+      {/* EXPANDED CONTENT */}
       {isExpanded && (
         <div className="p-4 border-t border-white/5 bg-black/20 text-[10px] space-y-3">
           {quest.objectives && quest.objectives.length > 0 && (
@@ -88,17 +88,27 @@ export const QuestCard: React.FC<QuestCardProps> = ({ quest, isCompleted, isAvai
         </div>
       )}
 
-      {/* PROGRESS BAR (BOTTOM) */}
-      <div className={`h-1 w-full ${isCompleted ? 'bg-green-600' : 'bg-white/5'}`} />
-
-      {/* LOCKED OVERLAY */}
+      {/* OVERLAYS: LOCKED & COMPLETED */}
       {!isAvailable && !isCompleted && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/10 pointer-events-none">
-          <div className="px-2 py-0.5 bg-black/90 border border-white/10 rounded flex items-center gap-2">
-             <span className="text-[7px] font-black text-gray-500 uppercase tracking-widest">Locked</span>
+        <div className="absolute inset-0 flex items-center justify-center bg-black/40 pointer-events-none">
+          <svg className="w-8 h-8 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+      )}
+
+      {isCompleted && (
+        <div className="absolute inset-0 flex items-center justify-center bg-green-900/10 pointer-events-none">
+          <div className="w-10 h-10 rounded-full bg-green-600/20 border border-green-500/30 flex items-center justify-center">
+            <svg className="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
           </div>
         </div>
       )}
+
+      {/* PROGRESS BAR (BOTTOM) */}
+      <div className={`h-1 w-full ${isCompleted ? 'bg-green-600' : 'bg-white/5'}`} />
     </div>
   );
 };
