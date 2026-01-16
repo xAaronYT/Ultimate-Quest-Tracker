@@ -1,18 +1,20 @@
 export const TRADERS = [
-  'Prapor', 'Therapist', 'Skier', 'Peacekeeper', 
-  'Mechanic', 'Ragman', 'Jaeger', 'Lightkeeper', 'Ref'
+  'Prapor', 'Therapist', 'Fence', 'Skier', 'Peacekeeper', 
+  'Mechanic', 'Ragman', 'Jaeger', 'Ref', 'Lightkeeper', 'BTR Driver'
 ];
 
 export const TRADER_COLORS: Record<string, string> = {
   Prapor: 'border-red-600',
   Therapist: 'border-blue-400',
+  Fence: 'border-gray-500',
   Skier: 'border-yellow-500',
   Peacekeeper: 'border-blue-600',
   Mechanic: 'border-purple-500',
   Ragman: 'border-emerald-500',
   Jaeger: 'border-green-700',
+  Ref: 'border-red-400',
   Lightkeeper: 'border-orange-400',
-  Ref: 'border-red-400'
+  'BTR Driver': 'border-orange-600'
 };
 
 export const COLLECTOR_ITEMS = [
