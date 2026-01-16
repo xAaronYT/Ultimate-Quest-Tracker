@@ -84,7 +84,7 @@ const App: React.FC = () => {
   };
 
   const filteredQuests = useMemo(() => {
-    return allQuests.filter(q => {
+    const filtered = allQuests.filter(q => {
       const isDone = completedQuestIds.has(q.id);
       const matchesSearch = q.name.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesTrader = activeTrader === 'All' || q.trader.name === activeTrader;
@@ -96,6 +96,13 @@ const App: React.FC = () => {
       else if (filterMode === 'Show All') matchesFilterMode = true;
 
       return matchesSearch && matchesTrader && matchesFilterMode;
+    });
+
+    // Sort: Active (incomplete) quests at the top
+    return [...filtered].sort((a, b) => {
+      const aDone = completedQuestIds.has(a.id) ? 1 : 0;
+      const bDone = completedQuestIds.has(b.id) ? 1 : 0;
+      return aDone - bDone;
     });
   }, [allQuests, searchQuery, activeTrader, filterMode, completedQuestIds]);
 
@@ -122,7 +129,7 @@ const App: React.FC = () => {
             <h4 className="text-xl font-black uppercase text-white italic">Confirm System Wipe</h4>
             <div className="flex gap-3 pt-2">
               <button onClick={() => setShowWipeSafeguard(false)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest rounded-lg">Cancel</button>
-              <button onClick={handleGlobalWipe} className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg">Confirm Wipe</button>
+              <button onClick={handleGlobalWipe} className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg">Confirm Wipe</button>
             </div>
           </div>
         </div>
@@ -146,6 +153,14 @@ const App: React.FC = () => {
               <span className="text-[10px] font-black uppercase tracking-widest">{trader}</span>
             </button>
           ))}
+        </div>
+
+        {/* DONATE BOX RESTORED */}
+        <div className="p-4 border-t border-white/5 bg-black/40">
+          <a href="https://cash.app/$xajcinc" target="_blank" rel="noopener noreferrer" className="group block p-3 rounded-lg border border-orange-500/10 hover:border-orange-500/30 transition-all text-center">
+            <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 group-hover:text-orange-500 transition-colors">Enjoying our app?</p>
+            <p className="text-[8px] font-bold text-gray-700 mt-1">Feel free to donate</p>
+          </a>
         </div>
       </nav>
 
@@ -173,7 +188,8 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 bg-[#0c0c0c]/98 border-t border-white/5 p-4 px-8 z-20">
+        {/* BOTTOM BAR: OPACITY INCREASED */}
+        <div className="absolute bottom-0 left-0 right-0 bg-[#0c0c0c] border-t border-white/5 p-4 px-8 z-20">
           <div className="max-w-7xl mx-auto grid grid-cols-3 gap-8">
             <ProgressBar label="Overall" value={`${stats.overall.count}/${stats.overall.total}`} pct={stats.overall.pct} color="bg-orange-600" />
             <ProgressBar label="Kappa" value={`${stats.kappa.pct}%`} pct={stats.kappa.pct} color="bg-[#fff000]" labelColor="text-[#fff000]" />
