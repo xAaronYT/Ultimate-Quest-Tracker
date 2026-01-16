@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { Quest } from './types';
 import { TRADERS, COLLECTOR_ITEMS } from './constants';
 import { QuestCard } from './components/QuestCard';
@@ -236,6 +237,7 @@ const App: React.FC = () => {
           </div>
         </div>
       </aside>
+      <Analytics />
     </div>
   );
 };
