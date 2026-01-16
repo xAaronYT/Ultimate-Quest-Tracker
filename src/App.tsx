@@ -120,10 +120,9 @@ const App: React.FC = () => {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4">
           <div className="max-w-sm w-full p-8 bg-[#121212] border border-red-900/30 rounded-2xl text-center space-y-6 shadow-2xl">
             <h4 className="text-xl font-black uppercase text-white italic">Confirm System Wipe</h4>
-            <p className="text-xs text-gray-500 tracking-wider leading-relaxed">This will erase all progress and items.</p>
             <div className="flex gap-3 pt-2">
-              <button onClick={() => setShowWipeSafeguard(false)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors">Cancel</button>
-              <button onClick={handleGlobalWipe} className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg transition-colors">Confirm Wipe</button>
+              <button onClick={() => setShowWipeSafeguard(false)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest rounded-lg">Cancel</button>
+              <button onClick={handleGlobalWipe} className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg">Confirm Wipe</button>
             </div>
           </div>
         </div>
@@ -132,69 +131,36 @@ const App: React.FC = () => {
       <nav className="w-64 flex-shrink-0 border-r border-white/5 bg-[#0a0a0a] flex flex-col z-30">
         <div className="p-6 border-b border-white/5">
           <h1 className="text-lg font-black tracking-tighter text-white uppercase italic leading-tight">Ultimate Quest Tracker</h1>
-          <p className="text-[8px] text-orange-500 font-bold uppercase tracking-[0.4em] mt-2 opacity-80">v1.2 Production</p>
         </div>
         
         <div className="flex-1 overflow-y-auto py-4 custom-scrollbar">
           <button onClick={() => setActiveTrader('All')} className={`w-full flex px-6 py-4 border-l-4 transition-all ${activeTrader === 'All' ? 'bg-orange-500/5 border-orange-500 text-orange-500' : 'border-transparent text-gray-600 hover:text-gray-300'}`}>
             <span className="text-[10px] font-black uppercase tracking-widest">Global Operations</span>
           </button>
-          
           <div className="px-6 py-3 text-[8px] font-black text-gray-800 uppercase tracking-widest">Traders</div>
-          
           {TRADERS.map((trader) => (
             <button key={trader} onClick={() => setActiveTrader(trader)} className={`w-full flex items-center gap-4 px-6 py-3 border-l-4 transition-all ${activeTrader === trader ? `bg-white/5 ${TRADER_COLORS[trader] || 'border-gray-500'} text-white` : 'border-transparent text-gray-500 hover:text-orange-400'}`}>
               <div className="w-7 h-7 rounded bg-black/40 flex items-center justify-center border border-white/5 overflow-hidden">
-                <img 
-                  src={`/assets/${normalizeAssetName(trader)}.png`} 
-                  alt={trader}
-                  title={trader}
-                  className={`w-full h-full object-cover ${activeTrader === trader ? 'grayscale-0' : 'grayscale opacity-40'}`}
-                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                />
+                <img src={`/assets/${normalizeAssetName(trader)}.png`} alt="" className="w-full h-full object-cover" />
               </div>
               <span className="text-[10px] font-black uppercase tracking-widest">{trader}</span>
             </button>
           ))}
         </div>
-
-        <div className="p-4 border-t border-white/5 bg-black/40">
-          <a href="https://cash.app/$xajcinc" target="_blank" rel="noopener noreferrer" className="group block p-3 rounded-lg border border-orange-500/10 hover:border-orange-500/30 transition-all text-center">
-            <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 group-hover:text-orange-500 transition-colors">Enjoying our app?</p>
-            <p className="text-[8px] font-bold text-gray-700 mt-1">Feel free to donate</p>
-          </a>
-        </div>
       </nav>
 
       <main className="flex-1 flex flex-col min-w-0 relative">
-        <header className="px-8 py-6 border-b border-white/5 flex flex-col lg:flex-row justify-between items-center gap-6 bg-[#0f0f0f]/90 backdrop-blur-xl z-20 sticky top-0">
+        <header className="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-[#0f0f0f]/90 backdrop-blur-xl z-20 sticky top-0">
           <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase">{activeTrader}</h2>
-          
-          <div className="flex flex-col sm:flex-row gap-4 items-center">
-            <input 
-              type="text" 
-              placeholder="Search..." 
-              className="bg-[#141414] border border-white/10 rounded-lg px-4 py-2 text-xs focus:border-orange-500/40 w-56 font-bold" 
-              value={searchQuery} 
-              onChange={(e) => setSearchQuery(e.target.value)} 
-            />
-            
+          <div className="flex gap-4 items-center">
+            <input type="text" placeholder="Search..." className="bg-[#141414] border border-white/10 rounded-lg px-4 py-2 text-xs w-56 font-bold" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
             <div className="flex bg-black p-1 rounded-lg border border-white/5">
               {(['Active', 'Kappa', 'Lightkeeper', 'Show All'] as FilterMode[]).map((mode) => (
-                <button key={mode} onClick={() => setFilterMode(mode)} className={`px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest transition-all ${filterMode === mode ? 'bg-orange-500 text-black' : 'text-gray-600 hover:text-orange-400'}`}>
-                  {mode}
-                </button>
+                <button key={mode} onClick={() => setFilterMode(mode)} className={`px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest ${filterMode === mode ? 'bg-orange-500 text-black' : 'text-gray-600'}`}>{mode}</button>
               ))}
             </div>
-
-            <button 
-              onClick={() => setShowWipeSafeguard(true)}
-              className="p-2.5 rounded-lg border border-white/5 hover:border-red-900/50 text-gray-600 hover:text-red-500 transition-all"
-              title="PURGE PROGRESS"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+            <button onClick={() => setShowWipeSafeguard(true)} className="p-2.5 rounded-lg border border-white/5 text-gray-600 hover:text-red-500">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
             </button>
           </div>
         </header>
@@ -202,18 +168,12 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-y-auto p-6 pb-[140px] custom-scrollbar">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredQuests.map(quest => (
-              <QuestCard 
-                key={quest.id} 
-                quest={quest} 
-                isCompleted={completedQuestIds.has(quest.id)} 
-                isAvailable={checkAvailability(quest)} 
-                onToggle={toggleQuest} 
-              />
+              <QuestCard key={quest.id} quest={quest} isCompleted={completedQuestIds.has(quest.id)} isAvailable={checkAvailability(quest)} onToggle={toggleQuest} />
             ))}
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 bg-[#0c0c0c]/98 border-t border-white/5 backdrop-blur-2xl p-4 px-8 z-20">
+        <div className="absolute bottom-0 left-0 right-0 bg-[#0c0c0c]/98 border-t border-white/5 p-4 px-8 z-20">
           <div className="max-w-7xl mx-auto grid grid-cols-3 gap-8">
             <ProgressBar label="Overall" value={`${stats.overall.count}/${stats.overall.total}`} pct={stats.overall.pct} color="bg-orange-600" />
             <ProgressBar label="Kappa" value={`${stats.kappa.pct}%`} pct={stats.kappa.pct} color="bg-[#fff000]" labelColor="text-[#fff000]" />
@@ -229,30 +189,42 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           <div className="grid grid-cols-4 gap-2">
             {COLLECTOR_ITEMS.map((item) => (
-              <button
-                key={item}
-                onClick={() => toggleCollectorItem(item)}
-                title={item}
-                className={`group relative aspect-square rounded border flex items-center justify-center overflow-hidden transition-all ${foundCollectorItems.has(item) ? 'bg-orange-500/10 border-orange-500/40 opacity-100' : 'bg-[#0f0f0f] border-white/5 opacity-30 hover:opacity-60'}`}
-              >
-                <img 
-                  src={`/assets/items/${normalizeAssetName(item)}.png`} 
-                  alt={item} 
-                  className="w-[80%] h-[80%] object-contain z-10"
-                  onError={(e) => { 
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.parentElement?.classList.add('flex-col');
-                  }}
-                />
-                <span className="absolute inset-0 flex items-center justify-center text-[7px] font-bold text-center p-1 text-gray-600 uppercase leading-none break-words pointer-events-none group-hover:text-orange-500">
-                   {item}
-                </span>
-              </button>
+              <StashItem 
+                key={item} 
+                item={item} 
+                isFound={foundCollectorItems.has(item)} 
+                onToggle={toggleCollectorItem} 
+              />
             ))}
           </div>
         </div>
       </aside>
     </div>
+  );
+};
+
+const StashItem: React.FC<{ item: string, isFound: boolean, onToggle: (item: string) => void }> = ({ item, isFound, onToggle }) => {
+  const [imgError, setImgError] = React.useState(false);
+  
+  return (
+    <button
+      onClick={() => onToggle(item)}
+      title={imgError ? item : undefined}
+      className={`relative aspect-square rounded border flex items-center justify-center overflow-hidden transition-all ${isFound ? 'bg-orange-500/10 border-orange-500/40 opacity-100' : 'bg-[#0f0f0f] border-white/5 opacity-30'}`}
+    >
+      {!imgError ? (
+        <img 
+          src={`/assets/items/${normalizeAssetName(item)}.png`} 
+          alt={item} 
+          className="w-[80%] h-[80%] object-contain z-10"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span className="text-[7px] font-bold text-center p-1 text-gray-600 uppercase leading-none break-words">
+           {item}
+        </span>
+      )}
+    </button>
   );
 };
 
